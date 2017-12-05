@@ -22,7 +22,7 @@ func isValid(passphrase string) bool {
 }
 
 func main() {
-	file, err := os.Open("input.txt")
+	file, err := os.Open("input-4.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
