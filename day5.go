@@ -40,6 +40,31 @@ func execute(steps []int) int {
 	}
 }
 
+func execute2(steps []int) int {
+	// Make a copy
+	orig := steps
+	steps = make([]int, len(steps))
+	copy(steps, orig)
+
+	count := 0
+	i := 0
+
+	for {
+		count++
+		// show(i, steps)
+		val := steps[i]
+		if val >= 3 {
+			steps[i]--
+		} else {
+			steps[i]++
+		}
+		i += val
+		if i < 0 || i >= len(steps) {
+			return count
+		}
+	}
+}
+
 func readInput(path string) ([]int, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -67,5 +92,7 @@ func main() {
 	// steps := []int{0, 3, 0, 1, -3}
 
 	n := execute(steps)
+	fmt.Println(n)
+	n = execute2(steps)
 	fmt.Println(n)
 }
