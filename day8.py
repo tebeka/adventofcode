@@ -18,8 +18,7 @@ with open('input-8.txt') as fp:
             continue
 
         regs[reg] = ops[op](regs[reg], int(val))
-        if regs[reg] > max_reg:
-            max_reg = regs[reg]
+        max_reg = max(regs[reg], max_reg)
 
 print(max(regs.values()))
 print(max_reg)
