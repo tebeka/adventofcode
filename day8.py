@@ -11,11 +11,7 @@ max_reg = 0
 
 with open('input-8.txt') as fp:
     for line in fp:
-        if not line.strip():
-            continue
-
-        fields = line.split()
-        reg, op, val, _, creg, cop, cval = fields
+        reg, op, val, _, creg, cop, cval = line.split()
         assert op in ops, f'unknown op - {op}'
 
         if not eval(f'{creg} {cop} {cval}', None, regs):
