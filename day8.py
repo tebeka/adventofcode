@@ -1,13 +1,6 @@
 import operator
 from collections import defaultdict
 
-code = '''
-b inc 5 if a > 1
-a inc 1 if b < 5
-c dec -10 if a >= 1
-c inc -20 if c == 10
-'''
-
 ops = {
     'inc': operator.add,
     'dec': operator.sub,
@@ -16,7 +9,6 @@ ops = {
 regs = defaultdict(int)
 max_reg = 0
 
-# for line in code.splitlines():
 with open('input-8.txt') as fp:
     for line in fp:
         if not line.strip():
