@@ -1,4 +1,5 @@
 import operator
+from collections import defaultdict
 
 code = '''
 b inc 5 if a > 1
@@ -12,7 +13,7 @@ ops = {
     'dec': operator.sub,
 }
 
-regs = {}
+regs = defaultdict(int)
 max_reg = 0
 
 # for line in code.splitlines():
@@ -20,18 +21,17 @@ with open('input-8.txt') as fp:
     for line in fp:
         if not line.strip():
             continue
+
         fields = line.split()
         reg, op, val, _, creg, cop, cval = fields
         assert op in ops, f'unknown op - {op}'
 
-        for r in (reg, creg):
-            regs.setdefault(r, 0)
+        if not eval(f'{creg} {cop} {cval}', None, regs):
+            continue
 
-        cond = eval(f'{creg} {cop} {cval}', None, regs)
-        if cond:
-            regs[reg] = ops[op](regs[reg], int(val))
-            if regs[reg] > max_reg:
-                max_reg = regs[reg]
+        regs[reg] = ops[op](regs[reg], int(val))
+        if regs[reg] > max_reg:
+            max_reg = regs[reg]
 
 print(max(regs.values()))
 print(max_reg)
