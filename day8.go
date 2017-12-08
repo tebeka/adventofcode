@@ -9,13 +9,6 @@ import (
 	"strings"
 )
 
-var code = `
-b inc 5 if a > 1
-a inc 1 if b < 5
-c dec -10 if a >= 1
-c inc -20 if c == 10
-`
-
 func eval(regs map[string]int, reg, cmp, val string) bool {
 	cval, err := strconv.Atoi(val)
 	if err != nil {
@@ -60,7 +53,6 @@ func main() {
 
 	maxReg := 0
 	regs := map[string]int{}
-	//scanner := bufio.NewScanner(strings.NewReader(code))
 	scanner := bufio.NewScanner(file)
 	for lnum := 1; scanner.Scan(); lnum++ {
 		if strings.TrimSpace(scanner.Text()) == "" {
