@@ -22,7 +22,7 @@
 
 (defn load-claims [path]
   (with-open [rdr (reader path)]
-    (apply vector (map parse-line (line-seq rdr)))))
+    (mapv parse-line (line-seq rdr))))
 
 (defn claim-overlap [c claims]
   (let [others (remove #(= c %1) claims)]
