@@ -13,6 +13,9 @@ import (
 var (
 	// #1 @ 861,330: 20x10
 	lineRe = regexp.MustCompile("([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)")
+	data   = `#1 @ 1,3: 4x4
+#2 @ 3,1: 4x4
+#3 @ 5,5: 2x2`
 )
 
 // Square on fabric
@@ -23,6 +26,7 @@ type Square struct {
 
 // Claim is a claim on grid
 type Claim struct {
+	ID          int
 	TopLeft     Square
 	BottomRight Square
 }
@@ -31,6 +35,11 @@ func parseLine(line string) (*Claim, error) {
 	fields := lineRe.FindStringSubmatch(line)
 	if len(fields) != 6 {
 		return nil, fmt.Errorf("wrong number of fields - %d", len(fields))
+	}
+
+	id, err := strconv.Atoi(fields[1])
+	if err != nil {
+		return nil, fmt.Errorf("bad id - %s", fields[1])
 	}
 
 	topX, err := strconv.Atoi(fields[2])
@@ -54,6 +63,7 @@ func parseLine(line string) (*Claim, error) {
 	}
 
 	claim := &Claim{
+		ID:          id,
 		TopLeft:     Square{topX, topY},
 		BottomRight: Square{topX + width - 1, topY + height - 1},
 	}
@@ -111,10 +121,6 @@ func overlap(c1, c2 *Claim) []Square {
 	return sqs
 }
 
-var data = `#1 @ 1,3: 4x4
-#2 @ 3,1: 4x4
-#3 @ 5,5: 2x2`
-
 func part1(claims []*Claim) {
 	dups := make(map[Square]bool)
 	for i, c1 := range claims {
@@ -126,6 +132,27 @@ func part1(claims []*Claim) {
 	}
 
 	fmt.Println(len(dups))
+}
+
+func hasOverlap(c *Claim, claims []*Claim) bool {
+	for _, other := range claims {
+		if other.ID == c.ID {
+			continue
+		}
+		if len(overlap(other, c)) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func part2(claims []*Claim) {
+	for _, c := range claims {
+		if !hasOverlap(c, claims) {
+			fmt.Println(c.ID)
+			return
+		}
+	}
 }
 
 func main() {
@@ -140,5 +167,5 @@ func main() {
 	}
 
 	part1(claims)
-
+	part2(claims)
 }
