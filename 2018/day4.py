@@ -52,18 +52,6 @@ def load_records(fp):
     return sorted(parse_line(line) for line in lines)
 
 
-def minutes(start, end):
-    if start.hour != 0:
-        counts = {m: 1 for m in range(start.minute, 60)}
-        start_min = 0
-    else:
-        counts = {}
-        start_min = start.minute
-
-    counts.update({m: 1 for m in range(start_min, end.minute)})
-    return counts
-
-
 def part_1(records):
     """We assume records are sorted by date/time"""
     sleeps = defaultdict(Counter)  # id -> minutes asleep
@@ -71,12 +59,10 @@ def part_1(records):
     for i, record in enumerate(records):
         prev = records[i-1] if i > 0 else None
         if record.id:
-            if prev and prev.state == asleep:
-                ms = {m: 1 for m in range(prev.time.minute, 60)}
-                sleeps[curr_id].update(ms)
             curr_id = record.id
         if record.state == awake and prev and prev.state == asleep:
-            sleeps[curr_id].update(minutes(prev.time, record.time))
+            minutes = range(prev.time.minute, record.time.minute)
+            sleeps[curr_id].update(minutes)
 
     def key(id):
         return sum(sleeps[key].values())
