@@ -22,7 +22,7 @@ def calc_areas(coords):
             key = partial(dist, c)
             c1 = min(coords, key=key)
             c2 = min((co for co in coords if co != c1), key=key)
-            if c1 == c2:
+            if key(c1) == key(c2):
                 continue
             areas[c1].append(c)
     return areas
