@@ -94,20 +94,106 @@ Step B must be finished before step E can begin.
 Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.`
 
-func part1(graph Graph) {
-	nodes := topoLexiSort(graph)
-	fmt.Println(strings.Join(nodes, ""))
+func duration(step string, delta int) int {
+	return int(step[0]-'A') + 1 + delta
+}
+
+func allZero(nums []int) bool {
+	for _, n := range nums {
+		if n != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func processTime(n int, nodes []string, delta int) int {
+	if n > len(nodes) {
+		n = len(nodes)
+	}
+
+	times := make([]int, n)
+	jobs := make([]string, n)
+	for i := 0; i < n; i++ {
+		times[i] = duration(nodes[i], delta)
+		jobs[i] = nodes[i]
+	}
+
+	time := 0
+	for {
+		if allZero(times) && n >= len(nodes) {
+			return time
+		}
+		time++
+		fmt.Printf("%02d: %v\n", time, jobs)
+		for i, t := range times {
+			if t > 0 {
+				t--
+			}
+			if t == 0 && n < len(nodes) {
+				fmt.Println(time, nodes[n])
+				t = duration(nodes[n], delta)
+				jobs[i] = nodes[n]
+				n++
+			}
+			times[i] = t
+		}
+	}
+}
+
+// A combination of toplogical and lexicographical timing
+func topoLexiTime(graph Graph, n int, delta int) int {
+	time := 0
+	for len(graph) > 0 {
+		roots := graphRoots(graph)
+		sort.Strings(roots)
+		time += processTime(n, roots, delta)
+		for _, node := range roots {
+			delete(graph, node)
+		}
+	}
+
+	return time
+}
+
+func openInput(debug bool) (io.Reader, error) {
+	if debug {
+		return strings.NewReader(data), nil
+	}
+
+	return os.Open("day-7.txt")
 }
 
 func main() {
-	/*
-		r := strings.NewReader(data)
-	*/
-	r, err := os.Open("day-7.txt")
+	debug := true
+	n, delta := 2, 0
+	if !debug {
+		n, delta = 4, 60
+	}
+
+	r, err := openInput(debug)
+	if err != nil {
+		panic(err)
+	}
+
 	graph, err := parseInput(r)
 	if err != nil {
 		panic(err)
 	}
 
-	part1(graph)
+	// part 1
+	nodes := topoLexiSort(graph)
+	fmt.Println(strings.Join(nodes, ""))
+
+	// part 2 - FIXME
+	r, err = openInput(debug)
+	if err != nil {
+		panic(err)
+	}
+
+	graph, err = parseInput(r)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(topoLexiTime(graph, n, delta))
 }
