@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -32,6 +34,10 @@ func parseInput(r io.Reader) (Graph, error) {
 		} else {
 			nodes[dest] = true
 		}
+
+		if _, ok = graph[dest]; !ok {
+			graph[dest] = make(map[string]bool)
+		}
 	}
 
 	if err := scan.Err(); err != nil {
@@ -42,6 +48,12 @@ func parseInput(r io.Reader) (Graph, error) {
 }
 
 func graphRoots(graph Graph) []string {
+	if len(graph) == 1 {
+		for node := range graph {
+			return []string{node}
+		}
+	}
+
 	hasIncoming := make(map[string]bool)
 	for _, dests := range graph {
 		for node := range dests {
@@ -59,10 +71,16 @@ func graphRoots(graph Graph) []string {
 	return roots
 }
 
+// A combination of toplogical and lexicographical sort
 func topoLexiSort(graph Graph) []string {
 	var nodes []string
 	roots := graphRoots(graph)
 	for len(roots) > 0 {
+		sort.Strings(roots)
+		node := roots[0]
+		nodes = append(nodes, node)
+		delete(graph, node)
+		roots = graphRoots(graph)
 	}
 
 	return nodes
@@ -76,16 +94,20 @@ Step B must be finished before step E can begin.
 Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.`
 
+func part1(graph Graph) {
+	nodes := topoLexiSort(graph)
+	fmt.Println(strings.Join(nodes, ""))
+}
+
 func main() {
-	r := strings.NewReader(data)
+	/*
+		r := strings.NewReader(data)
+	*/
+	r, err := os.Open("day-7.txt")
 	graph, err := parseInput(r)
 	if err != nil {
 		panic(err)
 	}
 
-	for k, v := range graph {
-		fmt.Printf("%s -> %v\n", k, v)
-	}
-
-	fmt.Printf("%v\n", graphRoots(graph))
+	part1(graph)
 }
