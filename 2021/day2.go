@@ -26,7 +26,8 @@ func main() {
 		"down": func(n int) { aim += n },
 	}
 
-	file, err := os.Open("2_small.txt")
+	// file, err := os.Open("2_small.txt")
+	file, err := os.Open("2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
